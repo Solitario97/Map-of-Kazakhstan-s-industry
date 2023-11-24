@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта с маркерами</title>
+    <!-- Подключение стилей Leaflet (замените ссылку на актуальную, если необходимо) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* Задайте высоту контейнера карты */
+        #map {
+            height: 900px;
+            width: 60%;
+            float: right;
+        }
+
+        /* Стили для списка маркеров */
+        #markerList {
+            list-style: none;
+            padding: 0;
+            float: left;
+            width: 40%;
+            height: 870px;
+            overflow: auto;
+        }
+
+        #markerList li {
+            cursor: pointer;
+            margin-bottom: 5px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .deleteButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: red;
+        }
+
+        #filterButtons {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Добавьте контейнер для карты -->
+    <div id="map"></div>
+    <div>
+        <label for="regionSelect">Выберите регион:</label>
+        <select id="regionSelect" onchange="filterBySelectedRegion()">
+            <option value="all">Все регионы</option>
+            <option value="Акмолинская область">Акмолинская область</option>
+            <option value="Карагандинская область">Карагандинская область</option>
+            <option value="Костанайская область">Костанайская область</option>
+            <option value="Павлодарская область">Павлодарская область</option>
+            <option value="Улытауская область">Улытауская область</option>
+            <option value="Актюбинская область">Актюбинская область</option>
+        </select>
+        <input type="text" id="searchInput" oninput="searchMarkers()" placeholder="Поиск по названию">
+    </div>
+
+
+    <!-- Добавьте список маркеров -->
+    <ul id="markerList"></ul>
+
+    <!-- Подключение библиотеки Leaflet -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        var map = L.map('map').setView([50.027508, 66.921544], 6); // Установка центра на Караганду
+        var markers = JSON.parse(localStorage.getItem('markers')) || [];
+        var mapMarkers = []; // Содержит отображаемые на карте маркеры
+        var markerData = []; // Содержит отображаемые на карте маркеры
+        var initialOrganizations = [{
+                name: 'Астана-Энергия',
+                coordinates: [51.067291, 71.356561],
+                region: 'Акмолинская область',
+                oked: '2411'
+            },
+            {
+                name: 'Астана-МунайГаз',
+                coordinates: [51.957807, 67.501679],
+                region: 'Акмолинская область',
+                oked: '3694'
+            },
+            {
+                name: 'Казцинк',
+                coordinates: [51.406059, 67.677431],
+                region: 'Акмолинская область',
+                oked: '2411'
+            },
+            {
+                name: 'Аркалыкский металлургический комбинат (АМК)',
+                coordinates: [49.884902, 73.167688],
+                region: 'Карагандинская область',
+                oked: '3694'
+            },
+            {
+                name: 'Богатырь Комир',
+                coordinates: [49.782151, 73.179992],
+                region: 'Карагандинская область',
+                oked: '2411'
+            },
+            {
+                name: 'Сатпаевский химический комбинат',
+                coordinates: [49.853923, 73.033108],
+                region: 'Карагандинская область',
+                oked: '3694'
+            },
+            {
+                name: 'Акмола-Энерго',
+                coordinates: [51.043121, 71.592556],
+                region: 'Акмолинская область',
+                oked: '2411'
+            },
+            {
+                name: 'Костанаймунайгаз',
+                coordinates: [53.074228, 62.871164],
+                region: 'Костанайская область',
+                oked: '2411'
+            },
+            {
+                name: 'Kostanay Minerals',
+                coordinates: [52.898962, 63.683874],
+                region: 'Костанайская область',
+                oked: '3694'
+            },
+            {
+                name: 'Акмола Пром',
+                coordinates: [51.114731, 71.530884],
+                region: 'Акмолинская область',
+                oked: '2411'
+            },
+            {
+                name: 'Павлодарская ТЭЦ (Теплоэлектроцентраль)',
+                coordinates: [51.883273, 76.553144],
+                region: 'Павлодарская область',
+                oked: '119'
+            },
+            {
+                name: 'Павлодарский гидрометзавод',
+                coordinates: [51.402633, 77.025564],
+                region: 'Павлодарская область',
+                oked: '2411'
+            },
+            {
+                name: 'Павлодарский химический завод',
+                coordinates: [52.321911, 78.102485],
+                region: 'Павлодарская область',
+                oked: '119'
+            },
+            {
+                name: 'Казцинк',
+                coordinates: [48.283193, 67.611524],
+                region: 'Улытауская область',
+                oked: '119'
+            },
+            {
+                name: 'Алтынкен',
+                coordinates: [47.724545, 69.94024],
+                region: 'Улытауская область',
+                oked: '2411'
+            },
+            {
+                name: 'ТОО "ТЕНГИЗШЕВРОЙЛ"',
+                coordinates: [49.181703, 56.916399],
+                region: 'Актюбинская область',
+                oked: '119'
+            },
+            {
+                name: 'ТОО "Актобемунайгаз"',
+                coordinates: [48.806863, 59.245115],
+                region: 'Актюбинская область',
+                oked: '2411'
+            }
+            // Add more organizations with region and oked information
+        ];
+
+        // Добавление слоя OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        map.fitBounds([
+            [52.1694, 71.4491], // Southwest coordinates of Astana
+            [47.972265, 71.502511] // Northeast coordinates of Karaganda
+        ]);
+
+        // Загрузка сохраненных маркеров
+        markers.forEach(function (item) {
+            addMarker(item.coordinates, item.name, item.region, item.oked);
+        });
+
+        // Добавление изначальных маркеров
+        initialOrganizations.forEach(function (organization) {
+            addMarker(
+                organization.coordinates,
+                organization.name,
+                new Date(),
+                organization.region,
+                organization.oked
+            );
+        });
+
+        // Обработчик события клика по карте
+        map.on('click', function (e) {
+            var name = prompt('Введите название маркера:');
+            if (name) {
+                var region = prompt('Введите регион:');
+                var oked = prompt('Введите OKED:');
+                addMarker(e.latlng, name, region, oked);
+            }
+        });
+
+        // Обработчик события beforeunload
+        window.addEventListener('beforeunload', function () {
+            localStorage.removeItem('markers');
+        });
+
+        function filterBySelectedRegion() {
+            var selectedRegion = document.getElementById('regionSelect').value;
+            var list = document.getElementById('markerList');
+            list.innerHTML = ''; // Очищаем список перед фильтрацией
+
+            // Удаляем все маркеры с карты
+            mapMarkers.forEach(function (marker) {
+                map.removeLayer(marker);
+            });
+
+            // Очищаем массив отображаемых маркеров
+            mapMarkers = [];
+
+            // Очищаем массив маркеров
+            markerData = [];
+
+            initialOrganizations.forEach(function (item) {
+                if (selectedRegion === 'all' || item.region === selectedRegion) {
+                    addToListAndMap(item);
+                }
+            });
+
+            // Сохраняем обновленные маркеры в localStorage
+            saveMarkersToStorage();
+        }
+
+        function searchMarkers() {
+            var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            var list = document.getElementById('markerList');
+            list.innerHTML = ''; // Clear the list before searching
+
+            // Remove all markers from the map
+            mapMarkers.forEach(function (marker) {
+                map.removeLayer(marker);
+            });
+
+            // Clear the array of displayed markers
+            mapMarkers = [];
+
+            initialOrganizations.forEach(function (item) {
+                var markerMatchesSearch =
+                    item.name.toLowerCase().includes(searchTerm) || item.oked.includes(searchTerm);
+
+                if (markerMatchesSearch) {
+                    addToListAndMap(item);
+                }
+            });
+
+            // Save updated markers to localStorage
+            saveMarkersToStorage();
+        }
+
+        function addToListAndMap(item) {
+            addToList(item);
+            addToMap(item);
+        }
+
+        function addToList(item) {
+            var listItem = document.createElement('li');
+            listItem.innerHTML =
+                '<strong>' +
+                item.name +
+                '</strong><br>' +
+                'Координаты: ' +
+                item.coordinates +
+                '<br>' +
+                'Регион: ' +
+                item.region +
+                '<br>' +
+                'OKED: ' +
+                item.oked;
+
+            var deleteButton = document.createElement('span');
+            deleteButton.textContent = 'Удалить маркер';
+            deleteButton.className = 'deleteButton';
+            deleteButton.onclick = function () {
+                deleteMarker(markerData.indexOf(item));
+            };
+
+            listItem.appendChild(deleteButton);
+            listItem.onclick = function () {
+                map.panTo(item.coordinates);
+            };
+
+            document.getElementById('markerList').appendChild(listItem);
+        }
+
+        function addToMap(item) {
+            var marker = L.marker(item.coordinates)
+                .addTo(map)
+                .bindPopup(
+                    item.name +
+                    '<br>' +
+                    'Координаты: ' +
+                    item.coordinates +
+                    '<br>' +
+                    'Регион: ' +
+                    item.region +
+                    '<br>' +
+                    'OKED: ' +
+                    item.oked
+                )
+                .openPopup();
+
+            mapMarkers.push(marker);
+        }
+
+        // Функция для добавления маркера
+        function addMarker(coordinates, name, region, oked) {
+            // Создаем маркер с SVG-иконкой
+            var markerIcon = L.divIcon({
+                className: 'custom-marker',
+                html: '<?xml version="1.0" encoding="utf-8"?>\n' +
+                    '<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->\n' +
+                    '<svg width="60px" height="60px" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg">\n' +
+                    '    <!-- SVG код вашей иконки -->\n' +
+                    '</svg>'
+            });
+
+            // Добавляем маркер на карту
+            var marker = L.marker(coordinates)
+                .addTo(map)
+                .bindPopup(
+                    name +
+                    '<br>' +
+                    'Координаты: ' +
+                    coordinates +
+                    '<br>' +
+                    'Регион: ' +
+                    region +
+                    '<br>' +
+                    'OKED: ' +
+                    oked
+                )
+                .openPopup();
+
+            // Добавляем маркер в массив отображаемых на карте маркеров
+            mapMarkers.push(marker);
+
+            // Добавляем данные маркера в массив маркеров
+            markerData.push({
+                coordinates: coordinates,
+                name: name,
+                region: region,
+                oked: oked
+            });
+
+            // Обновляем список маркеров
+            updateMarkerList();
+
+            // Сохраняем маркеры в localStorage
+            saveMarkersToStorage();
+        }
+
+        // Функция для удаления маркера
+        function deleteMarker(index) {
+            if (mapMarkers[index]) {
+                map.removeLayer(mapMarkers[index]);
+            }
+            mapMarkers.splice(index, 1);
+            markerData.splice(index, 1);
+            updateMarkerList();
+            saveMarkersToStorage();
+        }
+
+        // Функция для обновления списка маркеров
+        function updateMarkerList() {
+            var list = document.getElementById('markerList');
+            list.innerHTML = '';
+            markerData.forEach(function (item, index) {
+                addToList(item, index);
+            });
+        }
+
+        // Функция для сохранения маркеров в localStorage
+        function saveMarkersToStorage() {
+            var markersCopy = markerData.map(function (item) {
+                return {
+                    coordinates: item.coordinates,
+                    name: item.name,
+                    region: item.region,
+                    oked: item.oked
+                };
+            });
+
+            localStorage.setItem('markers', JSON.stringify(markersCopy));
+        }
+    </script>
+
+
+</body>
+
+</html>
