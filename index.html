@@ -289,10 +289,10 @@
         .head__functions {
             background-color: #f8f9fa;
             /* Светлый фон */
-            padding: 20px;
+            padding: 10px 0 10px 0;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            margin-bottom: 5px;
         }
 
         /* Стили для выпадающего списка */
@@ -323,8 +323,10 @@
         /* Адаптивные стили для мобильных устройств */
         @media (max-width: 768px) {
             .head__functions {
-                width: 100%;
-                padding: 15px;
+                display: flex;
+                flex-direction: column;
+                margin-top: 11px;
+                padding: 0;
             }
 
             #regionSelect,
@@ -336,11 +338,6 @@
                 margin: 10px 0 10px 0;
             }
 
-            .head__functions {
-                display: flex;
-                flex-direction: column;
-                margin-top: 11px;
-            }
         }
     </style>
 </head>
@@ -385,7 +382,7 @@
 
     <!-- Добавьте контейнер для карты -->
     <div id="map"></div>
-    <div className="head__functions">
+    <div class="head__functions">
         <label for="regionSelect">Выберите регион:</label>
         <select id="regionSelect" onchange="filterBySelectedRegion()">
             <option value="all">Все регионы</option>
