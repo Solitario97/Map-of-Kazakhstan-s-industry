@@ -27,12 +27,43 @@
 
         #markerList li {
             cursor: pointer;
-            margin-bottom: 5px;
-            padding: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            background-color: #f9f9f9;
             position: relative;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
+
+        #markerList li:hover {
+            background-color: #e9e9e9;
+            border-color: #b2b2b2;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #markerList li h3 {
+            font-family: 'Helvetica', sans-serif;
+            font-size: 1.2em;
+            color: #007bff;
+        }
+
+        #markerList li p {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            background-size: contain;
+            margin-right: 5px;
+        }
+
 
         .deleteButton {
             position: absolute;
@@ -60,6 +91,240 @@
             margin-bottom: 20px;
             /* Добавьте отступ снизу, если необходимо */
         }
+
+        /* Стиль модального окна */
+        .modal {
+            display: none;
+            /* Скрыто по умолчанию */
+            position: fixed;
+            /* Фиксированное позиционирование */
+            z-index: 1001;
+            /* Выше, чем у других элементов */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Полная ширина */
+            height: 100%;
+            /* Полная высота */
+            overflow: auto;
+            /* Включить прокрутку, если нужно */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Черный с непрозрачностью */
+            display: flex;
+            /* Использование Flexbox */
+            align-items: center;
+            /* Выравнивание по центру по вертикали */
+            justify-content: center;
+            /* Выравнивание по центру по горизонтали */
+        }
+
+
+
+
+        /* Стиль для кнопки закрытия */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Стили для формы ввода */
+        .modal input[type=text],
+        .modal input[type=password] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+
+        /* Стили для кнопки */
+        .modal button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 10px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 4px;
+        }
+
+        .modal .button__inter {
+            background: none;
+            color: black;
+            border: 2px solid #ccc;
+        }
+
+        .modal button:hover {
+            opacity: 0.8;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            /* Автоматические отступы для центрирования */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 40%;
+            /* Ширина модального окна */
+            border-radius: 10px;
+            /* Скругленные углы */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Тень для модального окна */
+            margin-top: 200px;
+        }
+
+        @media (max-width: 768px) {
+            #map {
+                width: 100%;
+                height: 50vh;
+                /* Уменьшение высоты карты */
+                float: none;
+            }
+
+            .deleteButton {
+                top: 44px;
+            }
+
+            #markerList {
+                width: 100%;
+                height: 50vh;
+                overflow: auto;
+            }
+
+            .modal-content {
+                width: 80%;
+                /* Уменьшение ширины модального окна */
+            }
+
+            #headerContainer {
+                flex-direction: column;
+            }
+        }
+
+        /* Стили для контейнера заголовка */
+        #headerContainer {
+            background-color: #1E90FF;
+            /* Синий цвет фона */
+            color: white;
+            /* Белый цвет текста */
+            padding: 10px 20px;
+            /* Внутренний отступ */
+            display: flex;
+            /* Гибкое размещение элементов */
+            justify-content: space-between;
+            /* Равномерное распределение пространства между элементами */
+            align-items: center;
+            /* Выравнивание элементов по центру */
+        }
+
+        /* Стили для заголовка */
+        #headerContainer h1 {
+            margin: 0;
+            /* Убрать внешний отступ */
+            font-size: 24px;
+            /* Размер шрифта заголовка */
+        }
+
+        /* Стилизация выпадающего списка и кнопки */
+        #headerContainer select,
+        #headerContainer button {
+            padding: 8px 15px;
+            /* Внутренний отступ */
+            margin-left: 10px;
+            /* Отступ слева */
+            border: none;
+            /* Убрать границу */
+            border-radius: 5px;
+            /* Скругленные углы */
+            font-size: 16px;
+            /* Размер шрифта */
+            cursor: pointer;
+            /* Курсор в виде указателя */
+        }
+
+        /* Стили для выпадающего списка */
+        #headerContainer select {
+            background-color: white;
+            /* Белый фон */
+            color: #333;
+            /* Темно-серый цвет текста */
+        }
+
+        /* Стили для кнопки */
+        #headerContainer button {
+            background-color: #FFD700;
+            /* Желтый фон */
+            color: black;
+            /* Черный цвет текста */
+            font-weight: bold;
+            /* Жирный шрифт */
+        }
+
+        /* Стили для кнопки при наведении */
+        #headerContainer button:hover {
+            background-color: #FFA500;
+            /* Оранжевый фон */
+        }
+
+        .head__functions {
+            background-color: #f8f9fa;
+            /* Светлый фон */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Стили для выпадающего списка */
+        #regionSelect {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Стили для текстового поля */
+        #searchInput {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Стилизация текстового поля при фокусировке */
+        #searchInput:focus {
+            border-color: #80bdff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* Адаптивные стили для мобильных устройств */
+        @media (max-width: 768px) {
+            .head__functions {
+                width: 100%;
+                padding: 15px;
+            }
+
+            #regionSelect,
+            #searchInput {
+                width: auto;
+            }
+        }
     </style>
 </head>
 
@@ -73,12 +338,37 @@
                 <option value="kk">Казахский</option>
                 <option value="en">Английский</option>
             </select>
+            <button>Войти</button>
         </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="myModal" class="modal">
+
+        <!-- Содержимое модального окна -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form>
+                <div>
+                    <label for="login">Логин:</label>
+                    <input type="text" id="login" name="login">
+                </div>
+                <div>
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password">
+                </div>
+                <div>
+                    <button type="button" class="button__inter">Войти</button>
+                    <button type="button">Войти с помощью ЭЦП</button>
+                </div>
+            </form>
+        </div>
+
     </div>
 
     <!-- Добавьте контейнер для карты -->
     <div id="map"></div>
-    <div>
+    <div className="head__functions">
         <label for="regionSelect">Выберите регион:</label>
         <select id="regionSelect" onchange="filterBySelectedRegion()">
             <option value="all">Все регионы</option>
@@ -310,33 +600,18 @@
         function addToList(item) {
             var listItem = document.createElement('li');
             listItem.innerHTML =
-                '<strong>' +
-                item.name +
-                '</strong><br>' +
-                'Координаты: ' +
-                item.coordinates +
-                '<br>' +
-                'Время: ' +
-                item.time +
-                '<br>' +
-                'Регион: ' +
-                item.region +
-                '<br>' +
-                'OKED: ' +
-                item.oked;
+                '<strong>' + item.name + '</strong><br>' +
+                'Время: ' + item.time + '<br>' +
+                'Регион: ' + item.region + '<br>' +
+                'OKED: ' + item.oked;
 
             var deleteButton = document.createElement('span');
-            deleteButton.textContent = 'Удалить маркер';
             deleteButton.className = 'deleteButton';
             deleteButton.onclick = function () {
                 deleteMarker(markerData.indexOf(item));
             };
 
             listItem.appendChild(deleteButton);
-            listItem.onclick = function () {
-                map.panTo(item.coordinates);
-            };
-
             document.getElementById('markerList').appendChild(listItem);
         }
 
@@ -344,19 +619,10 @@
             var marker = L.marker(item.coordinates)
                 .addTo(map)
                 .bindPopup(
-                    item.name +
-                    '<br>' +
-                    'Координаты: ' +
-                    item.coordinates +
-                    '<br>' +
-                    'Время создания: ' +
-                    item.time +
-                    '<br>' +
-                    'Регион: ' +
-                    item.region +
-                    '<br>' +
-                    'OKED: ' +
-                    item.oked
+                    item.name + '<br>' +
+                    'Время создания: ' + item.time + '<br>' +
+                    'Регион: ' + item.region + '<br>' +
+                    'OKED: ' + item.oked
                 )
                 .openPopup();
 
@@ -368,49 +634,29 @@
             // Создаем маркер с SVG-иконкой
             var markerIcon = L.divIcon({
                 className: 'custom-marker',
-                html: '<?xml version="1.0" encoding="utf-8"?>\n' +
-                    '<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->\n' +
-                    '<svg width="60px" height="60px" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg">\n' +
-                    '    <!-- SVG код вашей иконки -->\n' +
-                    '</svg>'
+                html: '<!-- SVG иконка -->'
             });
 
-            // Добавляем маркер на карту
             var marker = L.marker(coordinates)
                 .addTo(map)
                 .bindPopup(
-                    name +
-                    '<br>' +
-                    'Координаты: ' +
-                    coordinates +
-                    '<br>' +
-                    'Время создания: ' +
-                    time.toLocaleString() +
-                    '<br>' +
-                    'Регион: ' +
-                    region +
-                    '<br>' +
-                    'OKED: ' +
-                    oked
+                    name + '<br>' +
+                    'Время создания: ' + time.toLocaleString() + '<br>' +
+                    'Регион: ' + region + '<br>' +
+                    'OKED: ' + oked
                 )
                 .openPopup();
 
-            // Добавляем маркер в массив отображаемых на карте маркеров
             mapMarkers.push(marker);
 
-            // Добавляем данные маркера в массив маркеров
             markerData.push({
-                coordinates: coordinates,
                 name: name,
                 time: time.toLocaleString(),
                 region: region,
                 oked: oked
             });
 
-            // Обновляем список маркеров
             updateMarkerList();
-
-            // Сохраняем маркеры в localStorage
             saveMarkersToStorage();
         }
 
@@ -447,6 +693,32 @@
             });
 
             localStorage.setItem('markers', JSON.stringify(markersCopy));
+        }
+
+        // Получаем модальное окно
+        var modal = document.getElementById("myModal");
+
+        // Получаем кнопку, которая открывает модальное окно
+        var btn = document.querySelector("button");
+
+        // Получаем элемент <span>, который закрывает модальное окно
+        var span = document.getElementsByClassName("close")[0];
+
+        // Когда пользователь нажимает на кнопку, откройте модальное окно
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // Когда пользователь нажимает на <span> (x), закройте модальное окно
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // Когда пользователь нажимает в любом месте за пределами модального окна, закройте его
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
         }
     </script>
 
